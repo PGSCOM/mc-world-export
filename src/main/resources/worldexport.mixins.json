@@ -2,7 +2,8 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.scaffoldeditor.worldexport.mixins",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "worldexport.refmap.json",
   "mixins": [
   ],
   "client": [

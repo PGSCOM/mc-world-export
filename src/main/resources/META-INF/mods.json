@@ -1,0 +1,10 @@
+{
+  "required": true,
+  "package": "org.scaffoldeditor.worldexport",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "worldexport.refmap.json",
+  "mixins": [
+    "worldexport.mixins.json",
+    "debugger.mixins.json"
+  ]
+}
