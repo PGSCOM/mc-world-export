@@ -3,7 +3,7 @@ plugins {
 	id 'eclipse'
 	id 'idea'
 	id 'maven-publish'
-	id 'net.neoforged.gradle.userdev' version '7.0.163'
+	id 'net.neoforged.moddev' version '2.0.28-beta'
 }
 
 version = project.mod_version
@@ -17,66 +17,56 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 
-minecraft {
-	accessTransformers {
-		file('src/main/resources/META-INF/accesstransformer.cfg')
+neoForge {
+	version = project.neoforge_version
+	
+	parchment {
+		minecraftVersion = project.minecraft_version
+		mappingsVersion = "2024.07.28"
+	}
+
+	runs {
+		client {
+			client()
+		}
+		server {
+			server()
+		}
+	}
+
+	mods {
+		worldexport {
+			sourceSet(sourceSets.main)
+		}
 	}
 }
-
-runs {
-	configureEach {
-		systemProperty 'forge.logging.markers', 'REGISTRIES'
-		systemProperty 'forge.logging.console.level', 'debug'
-		modSource project.sourceSets.main
-	}
-
-	client {
-		systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-	}
-
-	server {
-		systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-		programArgument '--nogui'
-	}
-
-	gameTestServer {
-		systemProperty 'forge.enabledGameTestNamespaces', project.mod_id
-	}
-
-	data {
-		programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
-	}
-}
-
-sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-	repositories {
-		ivy {
-			setName("ReplayMod")
-			setUrl("https://minio.replaymod.com/replaymod/")
-			patternLayout { artifact("[artifact]-[revision](-[classifier])(.[ext])") }
-			metadataSources { artifact() }
-			content { includeGroup("com.replaymod") }
+	maven {
+		name = "CurseForge"
+		url = "https://www.cursemaven.com"
+		content {
+			includeGroup "curse.maven"
 		}
-		maven {
-			name = "Modrinth"
-			url = "https://api.modrinth.com/maven"
-		}
-		maven { url 'https://jitpack.io' }
 	}
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+	}
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
 	implementation "net.neoforged:neoforge:${neoforge_version}"
 
-	// Replay Mod
-	implementation "maven.modrinth:replaymod:${project.replaymod_version}"
+	// ReforgedPlay (Neoforge version of ReplayMod)
+	compileOnly "curse.maven:reforgedplay-1018692:${project.reforgedplay_file_id}"
+	runtimeOnly "curse.maven:reforgedplay-1018692:${project.reforgedplay_file_id}"
 	
 	implementation("com.github.LlamaLad7:MixinExtras:0.4.1")
 	annotationProcessor("com.github.LlamaLad7:MixinExtras:0.4.1")
 	
-	implementation(include('de.javagl:obj:0.3.0'))
+	implementation('de.javagl:obj:0.3.0')
 	implementation('org.joml:joml:1.10.2')
 
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
