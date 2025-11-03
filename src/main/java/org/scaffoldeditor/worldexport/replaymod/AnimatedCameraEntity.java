@@ -1,6 +1,7 @@
 package org.scaffoldeditor.worldexport.replaymod;
 
-import net.minecraft.network.packet.Packet;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import org.apache.logging.log4j.LogManager;
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.Rotation;
 import org.scaffoldeditor.worldexport.replaymod.util.FovProvider;
@@ -8,53 +9,52 @@ import org.scaffoldeditor.worldexport.replaymod.util.RollProvider;
 
 import com.replaymod.replaystudio.util.Location;
 
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityPose;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityDimensions;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Pose;
+import net.minecraft.world.level.Level;
 
 public class AnimatedCameraEntity extends Entity implements RollProvider, FovProvider {
 
-    public static final Identifier ID = new Identifier("worldexport", "camera");
+    public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("worldexport", "camera");
 
     public float roll;
     public double fov;
 
     private int color = 0xFFFFFFFF;
 
-    public AnimatedCameraEntity(EntityType<? extends AnimatedCameraEntity> type, World world) {
+    public AnimatedCameraEntity(EntityType<? extends AnimatedCameraEntity> type, Level world) {
         super(type, world);
-        if (!world.isClient) {
+        if (!world.isClientSide) {
             throw new IllegalStateException("Animated camera entity should never be spawned on the server!");
         }
     }
 
     @Override
-    protected void initDataTracker() {        
+    protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {        
     }
 
     @Override
-    protected void readCustomDataFromNbt(NbtCompound var1) {        
+    protected void readAdditionalSaveData(CompoundTag var1) {        
     }
 
     @Override
-    protected void writeCustomDataToNbt(NbtCompound var1) {        
+    protected void addAdditionalSaveData(CompoundTag var1) {        
     }
 
     @Override
-    public Packet<ClientPlayPacketListener> createSpawnPacket() {
+    public Packet<ClientGamePacketListener> getAddEntityPacket() {
         throw new IllegalStateException("This entity is client-side only.");
     }
 
     @Override
-    public ClientWorld getWorld() {
-        return (ClientWorld) super.getWorld();
+    public ClientLevel level() {
+        return (ClientLevel) super.level();
     }
 
     @Override
@@ -75,7 +75,7 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
     }
 
     @Override
-    protected float getEyeHeight(EntityPose pose, EntityDimensions dimensions) {
+    protected float getEyeHeight(Pose pose, EntityDimensions dimensions) {
         return 0;
     }
 
@@ -104,10 +104,10 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
      * @param z Z coordinate
      */
     public void setCameraPosition(double x, double y, double z) {
-        this.lastRenderX = this.prevX = x;
-        this.lastRenderY = this.prevY = y;
-        this.lastRenderZ = this.prevZ = z;
-        this.setPosition(x, y, z);
+        this.xOld = this.xo = x;
+        this.yOld = this.yo = y;
+        this.zOld = this.zo = z;
+        this.setPos(x, y, z);
     }
 
     /**
@@ -122,10 +122,10 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
             return;
         }
 
-        this.prevYaw = yaw;
-        this.prevPitch = pitch;
-        setPitch(pitch);
-        setYaw(yaw);
+        this.yRotO = yaw;
+        this.xRotO = pitch;
+        setXRot(pitch);
+        setYRot(yaw);
         setRoll(roll);
     }
 
@@ -139,7 +139,7 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
         float roll = (float) Math.toDegrees(rotation.roll());
 
         // TODO: verify this isn't fixing a mistake in the Blender addon
-        yaw = -MathHelper.wrapDegrees(yaw + 180);
+        yaw = -Mth.wrapDegrees(yaw + 180);
         pitch = 90 - pitch; // Why is Minecraft's rotation system so weird?
 
         setCameraRotation(yaw, pitch, roll);
@@ -161,17 +161,17 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
     }
 
     @Override
-    protected void spawnSprintingParticles() {
+    protected void spawnSprintParticles() {
         // We do not produce any particles, we are a camera
     }
 
     @Override
-    public boolean shouldSave() {
+    public boolean shouldBeSaved() {
         return false;
     }
     
     @Override
-    public boolean canHit() {
+    public boolean isPickable() {
         return true; // Allows player to spectate
     }
 
