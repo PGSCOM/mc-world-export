@@ -10,24 +10,24 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.TitleScreen;
-import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.text.Text;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.network.chat.Component;
+import net.neoforged.fml.loading.FMLLoader;
 
 @Mixin(TitleScreen.class)
 public class TitleScreenMixin extends Screen {
 
-    protected TitleScreenMixin(Text title) {
+    protected TitleScreenMixin(Component title) {
         super(title);
     }
 
     @Inject(method = "init()V", at = @At("RETURN"))
     protected void init(CallbackInfo ci) {
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
+        if (!FMLLoader.isProduction()) {
 
-            ButtonWidget button = new ButtonWidget.Builder(Text.literal("Debug Replays"), (b) -> {
+            Button button = Button.builder(Component.literal("Debug Replays"), (b) -> {
                 try {
                     ReplayDebugger instance = new ReplayDebugger();
                     instance.launch();
@@ -36,10 +36,10 @@ public class TitleScreenMixin extends Screen {
                             .error("Unable to launch debugger in headless environment.");
                 }
 
-            }).position(width - 98, 0)
+            }).pos(width - 98, 0)
               .size(98, 20).build();
             
-            addDrawableChild(button);
+            addRenderableWidget(button);
 
         }
     }

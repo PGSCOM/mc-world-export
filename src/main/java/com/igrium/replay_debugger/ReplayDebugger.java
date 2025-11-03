@@ -28,8 +28,8 @@ import org.scaffoldeditor.worldexport.replay.BaseReplayEntity;
 import org.scaffoldeditor.worldexport.replay.models.Transform;
 import org.scaffoldeditor.worldexport.replay.models.ReplayModel.Pose;
 
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 
@@ -45,7 +45,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 
-@Environment(EnvType.CLIENT)
+@OnlyIn(Dist.CLIENT)
 public class ReplayDebugger {
     private JFrame frame;
     private Outliner outliner;
