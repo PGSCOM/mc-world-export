@@ -4,7 +4,7 @@ import org.scaffoldeditor.worldexport.mat.MaterialConsumer;
 import org.scaffoldeditor.worldexport.replay.models.ReplayModel;
 import org.scaffoldeditor.worldexport.replay.models.ReplayModel.Pose;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public interface BaseReplayEntity {
     void generateMaterials(MaterialConsumer file);
@@ -16,7 +16,7 @@ public interface BaseReplayEntity {
      * Get the ID of the Minecraft entity this represents.
      * @return Minecraft ID.
      */
-    Identifier getMinecraftID();
+    ResourceLocation getMinecraftID();
 
     /**
      * Get the FPS of this entity's animation.

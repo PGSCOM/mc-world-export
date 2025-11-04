@@ -1,7 +1,7 @@
 package org.scaffoldeditor.worldexport.gui;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.AbstractGuiTextField;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
+import de.johni0702.minecraft.gui.element.AbstractGuiTextField;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 
 /**
  * A text field that takes a number value;

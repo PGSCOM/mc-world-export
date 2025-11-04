@@ -1,99 +1,194 @@
 plugins {
-	id 'fabric-loom' version '1.6-SNAPSHOT'
+	id 'java-library'
+	id 'eclipse'
+	id 'idea'
 	id 'maven-publish'
+	id 'net.neoforged.moddev' version '2.0.28-beta'
 }
 
-sourceCompatibility = JavaVersion.VERSION_17
-targetCompatibility = JavaVersion.VERSION_17
-
-archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-repositories {
-	repositories {
-		ivy {
-			setName("ReplayMod")
-			setUrl("https://minio.replaymod.com/replaymod/")
-			patternLayout { artifact("[artifact]-[revision](-[classifier])(.[ext])") }
-			metadataSources { artifact() }
-			content { includeGroup("com.replaymod") }
+base {
+	archivesName = project.archives_base_name
+}
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
+
+// Excluir temporalmente paquetes basados en la GUI de ReplayMod (requieren migración extensa a Mojang/NeoForge)
+sourceSets {
+	main {
+		java {
+			exclude 'org/scaffoldeditor/worldexport/gui/**'
+			exclude 'org/scaffoldeditor/worldexport/mixins/GuiRenderSettingsMixin.java'
+			exclude 'org/scaffoldeditor/worldexport/replaymod/render/**'
+			exclude 'org/scaffoldeditor/worldexport/vcap/**'
+			exclude 'org/scaffoldeditor/worldexport/world_snapshot/**'
+			exclude 'org/scaffoldeditor/worldexport/replay/**'
+			exclude 'com/igrium/replay_debugger/**'
+			exclude 'org/scaffoldeditor/worldexport/mixins/**'
+			exclude 'org/scaffoldeditor/worldexport/mat/**'
+			exclude 'org/scaffoldeditor/worldexport/replaymod/export/**'
+			exclude 'org/scaffoldeditor/worldexport/replaymod/ReplayFrameCapturer.java'
+			// Excluir temporalmente utilidades dependientes de APIs cliente de Fabric/Mojang hasta migrarlas
+			exclude 'org/scaffoldeditor/worldexport/util/ModelUtils.java'
+			exclude 'org/scaffoldeditor/worldexport/util/MeshUtils.java'
+			// Mantener UtilFunctions para que los tests de validación de nombres compilen
 		}
-		maven {
-                name = "Modrinth"
-                url = "https://api.modrinth.com/maven"
-            }
-		maven { url 'https://jitpack.io' }
 	}
 }
 
-dependencies {
-	// To change the versions see the gradle.properties file
-	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-	// Fabric API. This is technically optional, but you probably want it anyway.
-	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-
-	// Replay Mod
-	modImplementation "maven.modrinth:replaymod:${project.replaymod_version}"
-	implementation("com.github.LlamaLad7:MixinExtras:0.1.1")
-    annotationProcessor("com.github.LlamaLad7:MixinExtras:0.1.1")
+neoForge {
+	version = project.neoforge_version
 	
-	implementation(include('de.javagl:obj:0.3.0'))
-	implementation('org.joml:joml:1.10.2')
+	parchment {
+		minecraftVersion = project.minecraft_version
+		mappingsVersion = "2024.11.17"
+	}
 
-	testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+	runs {
+		client {
+			client()
+			// property 'mixin.env.remapRefMap', 'true'
+			// property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+		}
+		server {
+			server()
+			// property 'mixin.env.remapRefMap', 'true'
+			// property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+		}
+	}
+
+	mods {
+		worldexport {
+			sourceSet(sourceSets.main)
+		}
+	}
 }
 
-processResources {
-	inputs.property "version", project.version
+repositories {
+	maven {
+		name = "NeoForged"
+		url = "https://maven.neoforged.net/releases/"
+	}
+	maven {
+		name = "ParchmentMC"
+		url = "https://maven.parchmentmc.org"
+	}
+	maven {
+		name = "CurseForge"
+		url = "https://www.cursemaven.com"
+		content {
+			includeGroup "curse.maven"
+		}
+	}
+	maven {
+		name = "Modrinth"
+		url = "https://api.modrinth.com/maven"
+	}
+	maven { url 'https://jitpack.io' }
+	maven { url 'https://maven.nanite.dev/releases' }
+	mavenCentral()
+}
 
-	filesMatching("fabric.mod.json") {
-		expand "version": project.version
+dependencies {
+	implementation "net.neoforged:neoforge:${neoforge_version}"
+
+	// ReforgedPlay (Neoforge version of ReplayMod)
+	implementation "curse.maven:reforgedplay-1018692:${project.reforgedplay_file_id}"
+	
+	implementation("io.github.llamalad7:mixinextras-common:0.3.5")
+	annotationProcessor("io.github.llamalad7:mixinextras-common:0.3.5")
+	
+	implementation('de.javagl:obj:0.3.0')
+	implementation('org.joml:joml:1.10.2')
+	implementation('it.unimi.dsi:fastutil:8.5.12')
+
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
+	// Para tests que usan ImmutableSet
+	testImplementation 'com.google.guava:guava:32.1.3-jre'
+}
+
+// Extra configuration to extract and add embedded JARs from ReforgedPlay to the compile classpath
+configurations {
+	embed
+}
+
+dependencies {
+	// Pull the same ReforgedPlay artifact into the 'embed' configuration for extraction
+	embed "curse.maven:reforgedplay-1018692:${project.reforgedplay_file_id}"
+}
+
+def embeddedLibsDir = layout.buildDirectory.dir("embedded-libs")
+
+tasks.register('extractEmbeddedJars', Copy) {
+	from({
+		// Extract nested jars from the ReforgedPlay artifact under META-INF/jars/
+		def rpFiles = configurations.embed.resolve()
+		if (rpFiles.empty) return files()
+		zipTree(rpFiles.iterator().next()).matching { include 'META-INF/jars/*.jar' }
+	})
+	into embeddedLibsDir
+}
+
+// Ensure the embedded jars are available on the compiler classpath
+tasks.withType(JavaCompile).configureEach {
+	dependsOn tasks.named('extractEmbeddedJars')
+	classpath += files(fileTree(dir: embeddedLibsDir, include: ['**/*.jar']))
+}
+
+tasks.withType(ProcessResources).configureEach {
+	var replaceProperties = [
+		minecraft_version: minecraft_version,
+		minecraft_version_range: minecraft_version_range,
+		neoforge_version: neoforge_version,
+		neoforge_version_range: neoforge_version_range,
+		loader_version_range: loader_version_range,
+		mod_id: mod_id,
+		mod_name: mod_name,
+		mod_license: mod_license,
+		mod_version: mod_version,
+		mod_authors: mod_authors,
+		mod_description: mod_description,
+	]
+	inputs.properties replaceProperties
+
+	filesMatching(['META-INF/neoforge.mods.toml']) {
+		expand replaceProperties + [project: project]
 	}
 }
 
 tasks.withType(JavaCompile).configureEach {
-	// ensure that the encoding is set to UTF-8, no matter what the system default is
-	// this fixes some edge cases with special characters not displaying correctly
-	// see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
-	// If Javadoc is generated, this must be specified in that task too.
-	it.options.encoding = "UTF-8"
+	options.encoding = 'UTF-8'
 }
 
-java {
-	// Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-	// if it is present.
-	// If you remove this line, sources will not be generated.
-	withSourcesJar()
-}
-
-jar {
-	from("LICENSE") {
-		rename { "${it}_${project.archivesBaseName}"}
+idea {
+	module {
+		downloadSources = true
+		downloadJavadoc = true
 	}
 }
 
 test {
-    useJUnitPlatform()
+	useJUnitPlatform()
 }
 
 // Thanks to Modmuss for helping with this task!
 tasks.register('addon', Zip) {
-    from "addon"
-    archiveBaseName = "import_vcap"
-    destinationDirectory = project.layout.buildDirectory.dir("libs")
-    
-    filesMatching("**/__init__.py") {
-        filter {
-            it.replace("(0, 0, 0)", "(${version.replaceAll("[^\\d.]", "").split("\\.").join(", ")})")
-            
-        }
-    }
+	from "addon"
+	archiveBaseName = "import_vcap"
+	destinationDirectory = project.layout.buildDirectory.dir("libs")
+	
+	filesMatching("**/__init__.py") {
+		filter {
+			it.replace("(0, 0, 0)", "(${version.replaceAll("[^\\d.]", "").split("\\.").join(", ")})")
+			
+		}
+	}
 
-    exclude "**/__pycache__*"
-    exclude "*.py[cod]"
-    exclude "*.py.class"
+	exclude "**/__pycache__*"
+	exclude "*.py[cod]"
+	exclude "*.py.class"
 }

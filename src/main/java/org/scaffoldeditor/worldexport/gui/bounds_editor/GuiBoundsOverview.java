@@ -1,15 +1,15 @@
 package org.scaffoldeditor.worldexport.gui.bounds_editor;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.replaymod.lib.de.johni0702.minecraft.gui.GuiRenderer;
-import com.replaymod.lib.de.johni0702.minecraft.gui.RenderInfo;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.AbstractGuiElement;
-import com.replaymod.lib.de.johni0702.minecraft.gui.function.Draggable;
-import com.replaymod.lib.de.johni0702.minecraft.gui.function.Scrollable;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import de.johni0702.minecraft.gui.GuiRenderer;
+import de.johni0702.minecraft.gui.RenderInfo;
+import de.johni0702.minecraft.gui.element.AbstractGuiElement;
+import de.johni0702.minecraft.gui.function.Draggable;
+import de.johni0702.minecraft.gui.function.Scrollable;
+import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.Point;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.util.math.MatrixStack;

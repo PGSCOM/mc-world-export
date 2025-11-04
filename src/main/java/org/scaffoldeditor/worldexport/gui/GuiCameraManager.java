@@ -12,21 +12,21 @@ import org.scaffoldeditor.worldexport.replaymod.camera_animations.AbstractCamera
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.CameraAnimationModule;
 
 import com.replaymod.core.ReplayMod;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiClickable;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiContainer;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiPanel;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiScreen;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiVerticalList;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiButton;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiElement;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiLabel;
-import com.replaymod.lib.de.johni0702.minecraft.gui.function.Closeable;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.CustomLayout;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import com.replaymod.lib.de.johni0702.minecraft.gui.popup.GuiFileChooserPopup;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.Colors;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
+import de.johni0702.minecraft.gui.container.GuiClickable;
+import de.johni0702.minecraft.gui.container.GuiContainer;
+import de.johni0702.minecraft.gui.container.GuiPanel;
+import de.johni0702.minecraft.gui.container.GuiScreen;
+import de.johni0702.minecraft.gui.container.GuiVerticalList;
+import de.johni0702.minecraft.gui.element.GuiButton;
+import de.johni0702.minecraft.gui.element.GuiElement;
+import de.johni0702.minecraft.gui.element.GuiLabel;
+import de.johni0702.minecraft.gui.function.Closeable;
+import de.johni0702.minecraft.gui.layout.CustomLayout;
+import de.johni0702.minecraft.gui.layout.HorizontalLayout;
+import de.johni0702.minecraft.gui.popup.GuiFileChooserPopup;
+import de.johni0702.minecraft.gui.utils.Colors;
+import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 import com.replaymod.replay.ReplayHandler;
 
 import net.minecraft.client.world.ClientWorld;

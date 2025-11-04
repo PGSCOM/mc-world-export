@@ -4,22 +4,22 @@ import java.util.AbstractList;
 
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.CameraAnimationModule.CameraPathFrame;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.Colors;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
+import de.johni0702.minecraft.gui.utils.Colors;
 
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 public abstract class AbstractCameraAnimation extends AbstractList<CameraPathFrame> {
 
     protected int id;
-    protected Vec3d offset = new Vec3d(0, 0, 0);
+    protected Vec3 offset = new Vec3(0, 0, 0);
     protected String name = "[unnamed]";
     protected double startTime = 0;
 
 
     // protected Formatting color = Formatting.WHITE;
-    protected ReadableColor color = Colors.WHITE;
+    // Store color as ARGB int to avoid compile-time dependency on jgui color interfaces
+    protected int colorARGB = 0xFFFFFFFF;
 
     public int getId() {
         return id;
@@ -37,21 +37,16 @@ public abstract class AbstractCameraAnimation extends AbstractList<CameraPathFra
         this.name = name;
     }
 
-    public Vec3d getOffset() {
+    public Vec3 getOffset() {
         return offset;
     }
 
-    public void setOffset(Vec3d offset) {
+    public void setOffset(Vec3 offset) {
         this.offset = offset;
     }
 
-    public ReadableColor getColor() {
-        return color;
-    }
-
-    public void setColor(ReadableColor color) {
-        this.color = color;
-    }
+    public int getColorARGB() { return colorARGB; }
+    public void setColorARGB(int argb) { this.colorARGB = argb; }
 
     public double getStartTime() {
         return startTime;
@@ -92,7 +87,7 @@ public abstract class AbstractCameraAnimation extends AbstractList<CameraPathFra
      * @param index Frame number.
      * @return The position.
      */
-    public abstract Vec3d getPosition(int index);
+    public abstract Vec3 getPosition(int index);
 
     /**
      * Get the position of the camera at a given frame.
@@ -122,7 +117,7 @@ public abstract class AbstractCameraAnimation extends AbstractList<CameraPathFra
      * @param time The time in seconds.
      * @return The position.
      */
-    public Vec3d getPositionAt(double time) {
+    public Vec3 getPositionAt(double time) {
         int frame = getFrameNumber(time);
         if (frame < 0) {
             return getPosition(0);
@@ -132,13 +127,13 @@ public abstract class AbstractCameraAnimation extends AbstractList<CameraPathFra
 
         if (frame + 1 < size()) {
             double delta = getFrameDelta(time);
-            Vec3d prev = getPosition(frame);
-            Vec3d next = getPosition(frame + 1);
+            Vec3 prev = getPosition(frame);
+            Vec3 next = getPosition(frame + 1);
 
-            return new Vec3d(
-                    MathHelper.lerp(delta, prev.x, next.x),
-                    MathHelper.lerp(delta, prev.y, next.y),
-                    MathHelper.lerp(delta, prev.z, next.z));
+            return new Vec3(
+                    Mth.lerp(delta, prev.x, next.x),
+                    Mth.lerp(delta, prev.y, next.y),
+                    Mth.lerp(delta, prev.z, next.z));
         } else {
             return getPosition(frame);
         }
@@ -163,9 +158,9 @@ public abstract class AbstractCameraAnimation extends AbstractList<CameraPathFra
             Rotation next = getRotation(frame + 1);
 
             return Rotation.of(
-                    (float) MathHelper.lerp(delta, prev.pitch(), next.pitch()),
-                    (float) MathHelper.lerp(delta, prev.yaw(), next.yaw()),
-                    (float) MathHelper.lerp(delta, prev.roll(), next.roll()));
+                    (float) Mth.lerp(delta, prev.pitch(), next.pitch()),
+                    (float) Mth.lerp(delta, prev.yaw(), next.yaw()),
+                    (float) Mth.lerp(delta, prev.roll(), next.roll()));
         } else {
             return getRotation(frame);
         }
@@ -189,7 +184,7 @@ public abstract class AbstractCameraAnimation extends AbstractList<CameraPathFra
             double prev = getFov(frame);
             double next = getFov(frame + 1);
 
-            return MathHelper.lerp(delta, prev, next);
+            return Mth.lerp(delta, prev, next);
         } else {
             return getFov(frame);
         }

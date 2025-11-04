@@ -7,20 +7,20 @@ import org.scaffoldeditor.worldexport.gui.GuiNumberField.GuiIntField;
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.AbstractCameraAnimation;
 
 import com.replaymod.core.versions.MCVer.Keyboard;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiContainer;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiPanel;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiButton;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiLabel;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiTextField;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.advanced.GuiColorPicker;
-import com.replaymod.lib.de.johni0702.minecraft.gui.function.Typeable;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.GridLayout;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.HorizontalLayout;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.VerticalLayout;
-import com.replaymod.lib.de.johni0702.minecraft.gui.popup.AbstractGuiPopup;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.Colors;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import de.johni0702.minecraft.gui.container.GuiContainer;
+import de.johni0702.minecraft.gui.container.GuiPanel;
+import de.johni0702.minecraft.gui.element.GuiButton;
+import de.johni0702.minecraft.gui.element.GuiLabel;
+import de.johni0702.minecraft.gui.element.GuiTextField;
+import de.johni0702.minecraft.gui.element.advanced.GuiColorPicker;
+import de.johni0702.minecraft.gui.function.Typeable;
+import de.johni0702.minecraft.gui.layout.GridLayout;
+import de.johni0702.minecraft.gui.layout.HorizontalLayout;
+import de.johni0702.minecraft.gui.layout.VerticalLayout;
+import de.johni0702.minecraft.gui.popup.AbstractGuiPopup;
+import de.johni0702.minecraft.gui.utils.Colors;
+import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 
 public class GuiEditCamera extends AbstractGuiPopup<GuiEditCamera> implements Typeable {
 

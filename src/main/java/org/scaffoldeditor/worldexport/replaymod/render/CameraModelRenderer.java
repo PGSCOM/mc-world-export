@@ -4,7 +4,7 @@ import org.joml.Quaternionf;
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.AbstractCameraAnimation;
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.Rotation;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
 
 import net.minecraft.client.model.Dilation;
 import net.minecraft.client.model.ModelData;

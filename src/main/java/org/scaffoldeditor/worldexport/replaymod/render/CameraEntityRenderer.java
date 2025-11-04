@@ -2,63 +2,66 @@ package org.scaffoldeditor.worldexport.replaymod.render;
 
 import org.scaffoldeditor.worldexport.replaymod.AnimatedCameraEntity;
 
-import net.minecraft.client.model.ModelData;
-import net.minecraft.client.model.ModelPartBuilder;
-import net.minecraft.client.model.ModelPartData;
-import net.minecraft.client.model.ModelTransform;
-import net.minecraft.client.model.TexturedModelData;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.EntityRendererFactory.Context;
-import net.minecraft.client.render.entity.model.EntityModelPartNames;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+
+import net.minecraft.client.model.geom.ModelLayerLocation;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.CubeListBuilder;
+import net.minecraft.client.model.geom.builders.LayerDefinition;
+import net.minecraft.client.model.geom.builders.MeshDefinition;
+import net.minecraft.client.model.geom.builders.PartDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
 
 public class CameraEntityRenderer extends EntityRenderer<AnimatedCameraEntity> {
 
-    public static final Identifier TEXTURE = new Identifier("replaymod", "camera_head.png");
+    public static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath("replaymod", "camera_head.png");
     // private final RenderLayer RENDER_LAYER = RenderLayer.getEntitySolid(TEXTURE);
 
     // private final ModelPart model;
     
-    public CameraEntityRenderer(Context ctx) {
+    public CameraEntityRenderer(EntityRendererProvider.Context ctx) {
         super(ctx);
-        // model = ctx.getPart(ReplayExportMod.CAMERA_MODEL_LAYER);
+        // model = ctx.bakeLayer(ReplayExportMod.CAMERA_MODEL_LAYER);
     }
 
     @Override
-    public void render(AnimatedCameraEntity entity, float yaw, float tickDelta, MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers, int light) {
+    public void render(AnimatedCameraEntity entity, float yaw, float tickDelta, PoseStack matrices,
+            MultiBufferSource vertexConsumers, int light) {
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
 
         // VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RENDER_LAYER);
-        // matrices.push();
+        // matrices.pushPose();
         
-        // matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(180 + entity.getYaw(tickDelta)));
-        // matrices.multiply(Vec3f.NEGATIVE_X.getDegreesQuaternion(entity.getPitch(tickDelta)));
-        // matrices.multiply(Vec3f.POSITIVE_Z.getDegreesQuaternion(entity.getRoll()));
+        // matrices.mulPose(Axis.YN.rotationDegrees(180 + entity.getYRot(tickDelta)));
+        // matrices.mulPose(Axis.XN.rotationDegrees(entity.getXRot(tickDelta)));
+        // matrices.mulPose(Axis.ZP.rotationDegrees(entity.getRoll()));
         
-        // int rgb = entity.getColor().getColorValue();
+        // int rgb = entity.getColor();
         // float r = ((rgb >> 16) & 0xFF) / 256f;
         // float g = ((rgb >> 8) & 0xFF) / 256f;
         // float b = (rgb & 0xFF) / 256f;
 
-        // model.render(matrices, vertexConsumer, light, OverlayTexture.DEFAULT_UV, r, g, b, 1);
+        // model.render(matrices, vertexConsumer, light, OverlayTexture.NO_OVERLAY, r, g, b, 1);
 
-        // matrices.pop();
+        // matrices.popPose();
     }
 
-    public static TexturedModelData getTexturedModelData() {
-        ModelData modelData = new ModelData();
-        ModelPartData modelPartData = modelData.getRoot();
-        modelPartData.addChild(EntityModelPartNames.ROOT,
-                ModelPartBuilder.create().uv(0, 0).cuboid(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F),
-                ModelTransform.pivot(0, 0, 0));
-        return TexturedModelData.of(modelData, 64, 64);
+    public static LayerDefinition createBodyLayer() {
+        MeshDefinition meshdefinition = new MeshDefinition();
+        PartDefinition partdefinition = meshdefinition.getRoot();
+        partdefinition.addOrReplaceChild("root",
+                CubeListBuilder.create().texOffs(0, 0).addBox(-4.0F, -4.0F, -4.0F, 8.0F, 8.0F, 8.0F),
+                PartPose.offset(0, 0, 0));
+        return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
     @Override
-    public Identifier getTexture(AnimatedCameraEntity var1) {
+    public ResourceLocation getTextureLocation(AnimatedCameraEntity var1) {
         return TEXTURE;
     }
     

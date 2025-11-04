@@ -2,19 +2,14 @@ package org.scaffoldeditor.worldexport.replaymod;
 
 import com.replaymod.replaystudio.pathing.path.Timeline;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Called whenever the playhead on the replay timeline updates.
  */
 public interface TimelineUpdateCallback {
-    Event<TimelineUpdateCallback> EVENT = EventFactory.createArrayBacked(TimelineUpdateCallback.class, 
-    listeners -> (timeline, replayHandler, time) -> {
-        for (TimelineUpdateCallback listener : listeners) {
-            listener.onUpdate(null, replayHandler, time);
-        }
-    });
+    SimpleEvent<TimelineUpdateCallback> EVENT = new SimpleEvent<>();
 
     /**
      * Called whenever the playhead on the replay timeline moves.
@@ -23,4 +18,16 @@ public interface TimelineUpdateCallback {
      * @param time The new time.
      */
     void onUpdate(Timeline timeline, Object replayHandler, long time);
+    
+    class SimpleEvent<T> {
+        private final List<T> listeners = new ArrayList<>();
+        
+        public void register(T listener) {
+            listeners.add(listener);
+        }
+        
+        public List<T> getListeners() {
+            return listeners;
+        }
+    }
 }

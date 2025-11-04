@@ -5,63 +5,69 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.scaffoldeditor.worldexport.replay.model_adapters.ReplayModels;
 import org.scaffoldeditor.worldexport.replaymod.AnimatedCameraEntity;
 import org.scaffoldeditor.worldexport.replaymod.ReplayModHooks;
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.CameraAnimationModule;
-import org.scaffoldeditor.worldexport.replaymod.render.CameraEntityRenderer;
-import org.scaffoldeditor.worldexport.replaymod.render.CameraPathRenderer;
-import org.scaffoldeditor.worldexport.world_snapshot.WorldSnapshotManager;
+// import org.scaffoldeditor.worldexport.replaymod.render.CameraEntityRenderer;
+// import org.scaffoldeditor.worldexport.replaymod.render.CameraPathRenderer;
+// import org.scaffoldeditor.worldexport.replay.model_adapters.ReplayModels;
+// import org.scaffoldeditor.worldexport.world_snapshot.WorldSnapshotManager;
+// import com.replaymod.simplepathing.ReplayModSimplePathing;
 
-import com.replaymod.simplepathing.ReplayModSimplePathing;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.Version;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.entity.model.EntityModelLayer;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType; 
-import net.minecraft.entity.SpawnGroup;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-
-public class ReplayExportMod implements ClientModInitializer {
+@Mod(value = "worldexport", dist = Dist.CLIENT)
+public class ReplayExportMod {
 
     public static final Logger LOGGER = LogManager.getLogger("worldexport");
     private static ReplayExportMod instance;
 
-    public static final EntityType<AnimatedCameraEntity> ANIMATED_CAMERA = Registry.register(
-            Registries.ENTITY_TYPE, AnimatedCameraEntity.ID,
-            FabricEntityTypeBuilder.create(SpawnGroup.MISC, AnimatedCameraEntity::new)
-                    .dimensions(EntityDimensions.fixed(.75f, .75f))
-                    .disableSummon().build());
-        
-    public static final EntityModelLayer CAMERA_MODEL_LAYER = new EntityModelLayer(new Identifier("worldexport", "camera"), "main");
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = 
+        DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, "worldexport");
+
+    public static final DeferredHolder<EntityType<?>, EntityType<AnimatedCameraEntity>> ANIMATED_CAMERA = 
+        ENTITY_TYPES.register("animated_camera", () -> 
+            EntityType.Builder.of(AnimatedCameraEntity::new, MobCategory.MISC)
+                .sized(0.75f, 0.75f)
+                .clientTrackingRange(10)
+                .updateInterval(20)
+                .build("animated_camera"));
+    
+    public static final ResourceLocation CAMERA_MODEL_LAYER = ResourceLocation.fromNamespaceAndPath("worldexport", "camera");
 
     public static ReplayExportMod getInstance() {
         return instance;
     }
 
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    private final Minecraft client = Minecraft.getInstance();
 
     private Set<ClientBlockPlaceCallback> blockUpdateListeners = new HashSet<>();
     private final CameraAnimationModule cameraAnimationsModule = new CameraAnimationModule();
-    private CameraPathRenderer cameraPathRenderer;
+    // private CameraPathRenderer cameraPathRenderer;
 
-    private final Version modVersion = FabricLoader.getInstance().getModContainer("worldexport").get().getMetadata().getVersion();
+    private String modVersion;
     
-    private WorldSnapshotManager worldSnapshotManager;
+    // private WorldSnapshotManager worldSnapshotManager;
     
-    public Version getModVersion() {
+    public String getModVersion() {
         return modVersion;
     }
 
@@ -73,54 +79,66 @@ public class ReplayExportMod implements ClientModInitializer {
         return blockUpdateListeners.remove(listener);
     }
 
-    public WorldSnapshotManager getWorldSnapshotManager() {
-        return worldSnapshotManager;
-    }
+    // public WorldSnapshotManager getWorldSnapshotManager() {
+    //     return worldSnapshotManager;
+    // }
 
-    @Override
-    public void onInitializeClient() {
+    public ReplayExportMod(IEventBus modEventBus, ModContainer modContainer) {
         instance = this;
+        this.modVersion = modContainer.getModInfo().getVersion().toString();
 
-        if (FabricLoader.getInstance().isDevelopmentEnvironment()) {
-        }
+        ENTITY_TYPES.register(modEventBus);
 
+        modEventBus.addListener(this::onClientSetup);
+    }
 
-        ClientBlockPlaceCallback.EVENT.register((pos, oldState, state, world) -> {
-            blockUpdateListeners.forEach(listener -> listener.place(pos, oldState, state, world));
-        });
+    @SubscribeEvent
+    public void onClientSetup(FMLClientSetupEvent event) {
+        event.enqueueWork(() -> {
+            ClientBlockPlaceCallback.EVENT.register((pos, oldState, state, world) -> {
+                blockUpdateListeners.forEach(listener -> listener.place(pos, oldState, state, world));
+            });
 
-        worldSnapshotManager = new WorldSnapshotManager();
+            // worldSnapshotManager = new WorldSnapshotManager();
+            // ReplayModels.registerDefaults();
+            // EntityRenderers.register(ANIMATED_CAMERA.get(), CameraEntityRenderer::new);
 
-        ReplayModels.registerDefaults();
-        EntityRendererRegistry.register(ANIMATED_CAMERA, CameraEntityRenderer::new);
+            ReplayModHooks.onReplayModInit(replayMod -> {
+                cameraAnimationsModule.register();
+                cameraAnimationsModule.registerKeyBindings(replayMod);
+                // cameraPathRenderer = new CameraPathRenderer(cameraAnimationsModule, ReplayModSimplePathing.instance);
+                // cameraPathRenderer.register();
+            });
 
-        ReplayModHooks.onReplayModInit(replayMod -> {
-            cameraAnimationsModule.register();
-            cameraAnimationsModule.registerKeyBindings(replayMod);
-            cameraPathRenderer = new CameraPathRenderer(cameraAnimationsModule, ReplayModSimplePathing.instance);
-            cameraPathRenderer.register();
-            
-            WorldRenderEvents.AFTER_ENTITIES.register(cameraPathRenderer::render);
-        });
-
-        EntityModelLayerRegistry.registerModelLayer(CAMERA_MODEL_LAYER, CameraEntityRenderer::getTexturedModelData);
-        
-        // Allows you to spectate camera entity in replay editor.
-        WorldRenderEvents.AFTER_SETUP.register(context -> {
-            if (client.crosshairTarget.getType() == HitResult.Type.ENTITY) {
-                Entity ent = ((EntityHitResult) client.crosshairTarget).getEntity();
-                if (ent instanceof AnimatedCameraEntity) {
-                    client.targetedEntity = ent;
-                }
-            }
+            // Register render events
+            // NeoForge.EVENT_BUS.addListener(this::onRenderLevelStage);
         });
     }
+
+    // @SubscribeEvent
+    // public void onRenderLevelStage(RenderLevelStageEvent event) {
+    //     if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+    //         if (cameraPathRenderer != null) {
+    //             cameraPathRenderer.render(event);
+    //         }
+    //     }
+    //     
+    //     // Allows you to spectate camera entity in replay editor.
+    //     if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+    //         if (client.hitResult != null && client.hitResult.getType() == HitResult.Type.ENTITY) {
+    //             Entity ent = ((EntityHitResult) client.hitResult).getEntity();
+    //             if (ent instanceof AnimatedCameraEntity) {
+    //                 client.crosshairPickEntity = ent;
+    //             }
+    //         }
+    //     }
+    // }
 
     public CameraAnimationModule getCameraAnimationsModule() {
         return cameraAnimationsModule;
     }
     
-    public CameraPathRenderer getCameraPathRenderer() {
-        return cameraPathRenderer;
-    }
+    // public CameraPathRenderer getCameraPathRenderer() {
+    //     return cameraPathRenderer;
+    // }
 }

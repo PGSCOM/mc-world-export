@@ -2,22 +2,30 @@ package org.scaffoldeditor.worldexport;
 
 import javax.annotation.Nullable;
 
-import net.fabricmc.fabric.api.event.Event;
-import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 
 /**
  * Called on the client when a block has been updated.
  */
 public interface ClientBlockPlaceCallback {
-    Event<ClientBlockPlaceCallback> EVENT = EventFactory.createArrayBacked(ClientBlockPlaceCallback.class,
-        (listeners) -> (pos, oldState, state, world) -> {
-            for (ClientBlockPlaceCallback listener : listeners) {
-                listener.place(pos, oldState, state, world);
-            }
-    });
+    SimpleEvent<ClientBlockPlaceCallback> EVENT = new SimpleEvent<>();
     
-    void place(BlockPos pos, @Nullable BlockState oldState, BlockState state, World world);
+    void place(BlockPos pos, @Nullable BlockState oldState, BlockState state, Level world);
+    
+    class SimpleEvent<T> {
+        private final List<T> listeners = new ArrayList<>();
+        
+        public void register(T listener) {
+            listeners.add(listener);
+        }
+        
+        public List<T> getListeners() {
+            return listeners;
+        }
+    }
 }

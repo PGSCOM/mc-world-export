@@ -2,12 +2,12 @@ package org.scaffoldeditor.worldexport.gui;
 
 import org.scaffoldeditor.worldexport.replaymod.util.ExportInfo;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiPanel;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiScreen;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiLabel;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.advanced.GuiProgressBar;
-import com.replaymod.lib.de.johni0702.minecraft.gui.function.Tickable;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.CustomLayout;
+import de.johni0702.minecraft.gui.container.GuiPanel;
+import de.johni0702.minecraft.gui.container.GuiScreen;
+import de.johni0702.minecraft.gui.element.GuiLabel;
+import de.johni0702.minecraft.gui.element.advanced.GuiProgressBar;
+import de.johni0702.minecraft.gui.function.Tickable;
+import de.johni0702.minecraft.gui.layout.CustomLayout;
 
 public class GuiReplayExporter extends GuiScreen implements Tickable {
 

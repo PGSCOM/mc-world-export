@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 
 import javax.annotation.Nullable;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
 import com.replaymod.render.capturer.RenderInfo;
 import com.replaymod.render.frame.BitmapFrame;
 import com.replaymod.render.rendering.Channel;
