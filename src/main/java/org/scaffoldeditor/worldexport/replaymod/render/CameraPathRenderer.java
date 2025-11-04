@@ -15,7 +15,7 @@ import org.scaffoldeditor.worldexport.util.RenderUtils;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.EventRegistrations;
+import de.johni0702.minecraft.gui.utils.EventRegistrations;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.events.ReplayClosedCallback;
 import com.replaymod.replay.events.ReplayOpenedCallback;

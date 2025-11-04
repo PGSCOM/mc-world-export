@@ -35,14 +35,14 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class ParsedReplayEntity implements BaseReplayEntity {
 
     private ReplayModel<?> model;
     private String name;
     private float startTime = 0;
-    private Identifier minecraftID;
+    private ResourceLocation minecraftID;
     private float fps = 20;
 
     private String rawXML;
@@ -82,11 +82,11 @@ public class ParsedReplayEntity implements BaseReplayEntity {
     }
 
     @Override
-    public Identifier getMinecraftID() {
+    public ResourceLocation getMinecraftID() {
         return minecraftID;
     }
 
-    public void setMinecraftID(Identifier minecraftID) {
+    public void setMinecraftID(ResourceLocation minecraftID) {
         this.minecraftID = minecraftID;
     }
 
@@ -158,7 +158,7 @@ public class ParsedReplayEntity implements BaseReplayEntity {
 
         String className = xml.getAttribute("class");
         if (className.length() > 0) {
-            entity.minecraftID = new Identifier(className);
+            entity.minecraftID = new ResourceLocation(className);
         } else {
             LogManager.getLogger().warn("Entity: {} is missing a class name!", name);
         }

@@ -6,15 +6,15 @@ import java.util.concurrent.CompletableFuture;
 
 import org.scaffoldeditor.worldexport.util.Box2i;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiContainer;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiPanel;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiButton;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiSlider;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.CustomLayout;
-import com.replaymod.lib.de.johni0702.minecraft.gui.layout.VerticalLayout;
-import com.replaymod.lib.de.johni0702.minecraft.gui.popup.AbstractGuiPopup;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
+import de.johni0702.minecraft.gui.container.GuiContainer;
+import de.johni0702.minecraft.gui.container.GuiPanel;
+import de.johni0702.minecraft.gui.element.GuiButton;
+import de.johni0702.minecraft.gui.element.GuiSlider;
+import de.johni0702.minecraft.gui.layout.CustomLayout;
+import de.johni0702.minecraft.gui.layout.VerticalLayout;
+import de.johni0702.minecraft.gui.popup.AbstractGuiPopup;
+import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
 
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.ChunkPos;

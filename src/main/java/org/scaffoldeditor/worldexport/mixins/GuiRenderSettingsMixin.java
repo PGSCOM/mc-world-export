@@ -9,8 +9,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import com.replaymod.core.ReplayMod;
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.AbstractGuiScreen;
-import com.replaymod.lib.de.johni0702.minecraft.gui.element.GuiButton;
+import de.johni0702.minecraft.gui.container.AbstractGuiScreen;
+import de.johni0702.minecraft.gui.element.GuiButton;
 import com.replaymod.render.gui.GuiRenderSettings;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replaystudio.pathing.path.Timeline;

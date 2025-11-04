@@ -1,10 +1,10 @@
 package org.scaffoldeditor.worldexport.gui;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.container.GuiContainer;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Point;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
+import de.johni0702.minecraft.gui.container.GuiContainer;
+import de.johni0702.minecraft.gui.utils.lwjgl.Dimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.Point;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadableDimension;
+import de.johni0702.minecraft.gui.utils.lwjgl.ReadablePoint;
 
 import net.minecraft.util.Identifier;
 

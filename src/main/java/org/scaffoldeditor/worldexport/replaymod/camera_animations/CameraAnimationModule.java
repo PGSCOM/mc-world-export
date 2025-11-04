@@ -19,7 +19,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.scaffoldeditor.worldexport.ReplayExportMod;
-import org.scaffoldeditor.worldexport.gui.GuiCameraManager;
+// import org.scaffoldeditor.worldexport.gui.GuiCameraManager;
 import org.scaffoldeditor.worldexport.replaymod.AnimatedCameraEntity;
 import org.scaffoldeditor.worldexport.replaymod.TimelineUpdateCallback;
 import org.scaffoldeditor.worldexport.replaymod.animation_serialization.AnimationSerializer;
@@ -31,17 +31,17 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.replaymod.core.KeyBindingRegistry;
 import com.replaymod.core.ReplayMod;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.EventRegistrations;
+import de.johni0702.minecraft.gui.utils.EventRegistrations;
 import com.replaymod.replay.ReplayHandler;
 import com.replaymod.replay.events.ReplayClosingCallback;
 import com.replaymod.replay.events.ReplayOpenedCallback;
 import com.replaymod.replaystudio.pathing.path.Timeline;
 import com.replaymod.replaystudio.replay.ReplayFile;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * A custom replay mod module allowing for camera paths to be imported from
@@ -87,9 +87,9 @@ public class CameraAnimationModule extends EventRegistrations {
      */
     private Map<ReplayFile, BiMap<Integer, AbstractCameraAnimation>> animCache = new HashMap<>();
 
-    public static record CameraPathFrame(Vec3d pos, Rotation rot, double fov) {}
+    public static record CameraPathFrame(Vec3 pos, Rotation rot, double fov) {}
     protected AnimationSerializer serializer = new AnimationSerializer();
-    protected final MinecraftClient client = MinecraftClient.getInstance();
+    protected final Minecraft client = Minecraft.getInstance();
 
     public KeyBindingRegistry.Binding keySyncTime;
     private ExecutorService saveService;
@@ -109,7 +109,8 @@ public class CameraAnimationModule extends EventRegistrations {
 
     public void registerKeyBindings(ReplayMod replayMod) {
         replayMod.getKeyBindingRegistry().registerKeyBinding("worldexport.input.importcamera", 0, () -> {
-            new GuiCameraManager(this, currentReplay).display();
+            // GUI deshabilitada temporalmente hasta migrar GUI a de.johni0702 y reactivar el paquete
+            // new GuiCameraManager(this, currentReplay).display();
         }, true);
     }
 
@@ -119,9 +120,9 @@ public class CameraAnimationModule extends EventRegistrations {
      * @param id The camera ID.
      * @return This camera's entity.
      */
-    public AnimatedCameraEntity getCameraEntity(ClientWorld world, int id) {
+    public AnimatedCameraEntity getCameraEntity(ClientLevel world, int id) {
         int entId = getEntId(id);
-        Entity entity = world.getEntityById(entId);
+        Entity entity = world.getEntity(entId);
         if (entity != null) {
             if (!(entity instanceof AnimatedCameraEntity)) {
                 throw new IllegalStateException("A client entity was found with the id " + entId
@@ -131,8 +132,9 @@ public class CameraAnimationModule extends EventRegistrations {
         }
 
         // Create the entity if it doesn't exist.
-        AnimatedCameraEntity camera = ReplayExportMod.ANIMATED_CAMERA.create(world);
+        AnimatedCameraEntity camera = new AnimatedCameraEntity(ReplayExportMod.ANIMATED_CAMERA.get(), world);
         camera.setId(entId);
+        // Add entity to client world
         world.addEntity(camera);
         return camera;
     }
@@ -143,9 +145,9 @@ public class CameraAnimationModule extends EventRegistrations {
      * @param id The camera ID.
      * @return This camera's entity.
      */
-    public Optional<AnimatedCameraEntity> optCameraEntity(ClientWorld world, int id) {
+    public Optional<AnimatedCameraEntity> optCameraEntity(ClientLevel world, int id) {
         int entId = getEntId(id);
-        Entity entity = world.getEntityById(entId);
+        Entity entity = world.getEntity(entId);
         if (entity != null) {
             if (!(entity instanceof AnimatedCameraEntity)) {
                 throw new IllegalStateException("A client entity was found with the id " + entId
@@ -190,11 +192,11 @@ public class CameraAnimationModule extends EventRegistrations {
         double timeSeconds = time / 1000d;
         for (int id : animations.keySet()) {
             AbstractCameraAnimation anim = animations.get(id);
-            AnimatedCameraEntity camera = getCameraEntity(client.world, id);
-            camera.setColor(RenderUtils.colorToARGB(anim.getColor()));
+            AnimatedCameraEntity camera = getCameraEntity(client.level, id);
+            camera.setColor(anim.getColorARGB());
 
-            Vec3d pos = anim.getPositionAt(timeSeconds);
-            Vec3d offset = anim.getOffset();
+            Vec3 pos = anim.getPositionAt(timeSeconds);
+            Vec3 offset = anim.getOffset();
             Rotation rot = anim.getRotationAt(timeSeconds);
             double fov = anim.getFovAt(timeSeconds);
 

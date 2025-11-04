@@ -3,7 +3,7 @@ package org.scaffoldeditor.worldexport.replaymod.animation_serialization;
 import org.joml.Quaternionfc;
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.Rotation;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 public interface AnimationChannel<T> {
     public int numValues();
@@ -23,7 +23,7 @@ public interface AnimationChannel<T> {
         return (AnimationChannel<T>) channel;
     }
 
-    public interface VectorProvidingChannel<E extends Vec3d> extends AnimationChannel<Vec3d> {
+    public interface VectorProvidingChannel<E extends Vec3> extends AnimationChannel<Vec3> {
         E read(double... values);
     }
 
@@ -35,7 +35,7 @@ public interface AnimationChannel<T> {
         E read(double... values);
     }
 
-    public static class VectorChannel implements VectorProvidingChannel<Vec3d> {
+    public static class VectorChannel implements VectorProvidingChannel<Vec3> {
 
         @Override
         public int numValues() {
@@ -43,18 +43,18 @@ public interface AnimationChannel<T> {
         }
 
         @Override
-        public Vec3d read(double... values) throws IndexOutOfBoundsException {
-            return new Vec3d(values[0], values[1], values[2]);
+        public Vec3 read(double... values) throws IndexOutOfBoundsException {
+            return new Vec3(values[0], values[1], values[2]);
         }
 
         @Override
-        public double[] write(Vec3d value) {
+        public double[] write(Vec3 value) {
             return new double[] { value.x, value.y, value.z };
         }
 
         @Override
-        public Class<? extends Vec3d> getChannelType() {
-            return Vec3d.class;
+        public Class<? extends Vec3> getChannelType() {
+            return Vec3.class;
         }
         
     }

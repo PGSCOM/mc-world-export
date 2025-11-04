@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 
 /**
  * An algorithm for executing a <a href="https://en.wikipedia.org/wiki/Flood_fill">flood fill</a>
@@ -112,40 +112,40 @@ public abstract class FloodFill {
 
                     if (queue.size() >= maxDepth) continue;
 
-                    queue.add(pos.add(1, 0, 0));
-                    queue.add(pos.add(-1, 0, 0));
-                    queue.add(pos.add(0, 1, 0));
-                    queue.add(pos.add(0, -1, 0));
-                    queue.add(pos.add(0, 0, 1));
-                    queue.add(pos.add(0, 0, -1));
+                    queue.add(pos.offset(1, 0, 0));
+                    queue.add(pos.offset(-1, 0, 0));
+                    queue.add(pos.offset(0, 1, 0));
+                    queue.add(pos.offset(0, -1, 0));
+                    queue.add(pos.offset(0, 0, 1));
+                    queue.add(pos.offset(0, 0, -1));
 
                     if (edges) {
-                        queue.add(pos.add(-1, 1, 0));
-                        queue.add(pos.add(1, 1, 0));
-                        queue.add(pos.add(-1, -1, 0));
-                        queue.add(pos.add(1, -1, 0));
+                        queue.add(pos.offset(-1, 1, 0));
+                        queue.add(pos.offset(1, 1, 0));
+                        queue.add(pos.offset(-1, -1, 0));
+                        queue.add(pos.offset(1, -1, 0));
                         
-                        queue.add(pos.add(0, 1, -1));
-                        queue.add(pos.add(0, -1, -1));
-                        queue.add(pos.add(0, -1, 1));
-                        queue.add(pos.add(0, 1, 1));
+                        queue.add(pos.offset(0, 1, -1));
+                        queue.add(pos.offset(0, -1, -1));
+                        queue.add(pos.offset(0, -1, 1));
+                        queue.add(pos.offset(0, 1, 1));
 
-                        queue.add(pos.add(-1, 0, -1));
-                        queue.add(pos.add(1, 0, -1));
-                        queue.add(pos.add(1, 0, 1));
-                        queue.add(pos.add(-1, 0, 1));
+                        queue.add(pos.offset(-1, 0, -1));
+                        queue.add(pos.offset(1, 0, -1));
+                        queue.add(pos.offset(1, 0, 1));
+                        queue.add(pos.offset(-1, 0, 1));
                     }
 
                     if (corners) {
-                        queue.add(pos.add(-1, -1, -1));
-                        queue.add(pos.add(1, -1, -1));
-                        queue.add(pos.add(1, -1, 1));
-                        queue.add(pos.add(-1, -1, 1));
+                        queue.add(pos.offset(-1, -1, -1));
+                        queue.add(pos.offset(1, -1, -1));
+                        queue.add(pos.offset(1, -1, 1));
+                        queue.add(pos.offset(-1, -1, 1));
 
-                        queue.add(pos.add(-1, 1, -1));
-                        queue.add(pos.add(1, 1, -1));
-                        queue.add(pos.add(1, 1, 1));
-                        queue.add(pos.add(-1, 1, 1));
+                        queue.add(pos.offset(-1, 1, -1));
+                        queue.add(pos.offset(1, 1, -1));
+                        queue.add(pos.offset(1, 1, 1));
+                        queue.add(pos.offset(-1, 1, 1));
                     }
                 } else {
                     blacklist.add(pos);

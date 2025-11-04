@@ -5,15 +5,14 @@ import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.scaffoldeditor.worldexport.replay.model_adapters.ReplayModels;
 import org.scaffoldeditor.worldexport.replaymod.AnimatedCameraEntity;
 import org.scaffoldeditor.worldexport.replaymod.ReplayModHooks;
 import org.scaffoldeditor.worldexport.replaymod.camera_animations.CameraAnimationModule;
-import org.scaffoldeditor.worldexport.replaymod.render.CameraEntityRenderer;
-import org.scaffoldeditor.worldexport.replaymod.render.CameraPathRenderer;
-import org.scaffoldeditor.worldexport.world_snapshot.WorldSnapshotManager;
-
-import com.replaymod.simplepathing.ReplayModSimplePathing;
+// import org.scaffoldeditor.worldexport.replaymod.render.CameraEntityRenderer;
+// import org.scaffoldeditor.worldexport.replaymod.render.CameraPathRenderer;
+// import org.scaffoldeditor.worldexport.replay.model_adapters.ReplayModels;
+// import org.scaffoldeditor.worldexport.world_snapshot.WorldSnapshotManager;
+// import com.replaymod.simplepathing.ReplayModSimplePathing;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderers;
@@ -62,11 +61,11 @@ public class ReplayExportMod {
 
     private Set<ClientBlockPlaceCallback> blockUpdateListeners = new HashSet<>();
     private final CameraAnimationModule cameraAnimationsModule = new CameraAnimationModule();
-    private CameraPathRenderer cameraPathRenderer;
+    // private CameraPathRenderer cameraPathRenderer;
 
     private String modVersion;
     
-    private WorldSnapshotManager worldSnapshotManager;
+    // private WorldSnapshotManager worldSnapshotManager;
     
     public String getModVersion() {
         return modVersion;
@@ -80,9 +79,9 @@ public class ReplayExportMod {
         return blockUpdateListeners.remove(listener);
     }
 
-    public WorldSnapshotManager getWorldSnapshotManager() {
-        return worldSnapshotManager;
-    }
+    // public WorldSnapshotManager getWorldSnapshotManager() {
+    //     return worldSnapshotManager;
+    // }
 
     public ReplayExportMod(IEventBus modEventBus, ModContainer modContainer) {
         instance = this;
@@ -100,47 +99,46 @@ public class ReplayExportMod {
                 blockUpdateListeners.forEach(listener -> listener.place(pos, oldState, state, world));
             });
 
-            worldSnapshotManager = new WorldSnapshotManager();
-
-            ReplayModels.registerDefaults();
-            EntityRenderers.register(ANIMATED_CAMERA.get(), CameraEntityRenderer::new);
+            // worldSnapshotManager = new WorldSnapshotManager();
+            // ReplayModels.registerDefaults();
+            // EntityRenderers.register(ANIMATED_CAMERA.get(), CameraEntityRenderer::new);
 
             ReplayModHooks.onReplayModInit(replayMod -> {
                 cameraAnimationsModule.register();
                 cameraAnimationsModule.registerKeyBindings(replayMod);
-                cameraPathRenderer = new CameraPathRenderer(cameraAnimationsModule, ReplayModSimplePathing.instance);
-                cameraPathRenderer.register();
+                // cameraPathRenderer = new CameraPathRenderer(cameraAnimationsModule, ReplayModSimplePathing.instance);
+                // cameraPathRenderer.register();
             });
 
             // Register render events
-            NeoForge.EVENT_BUS.addListener(this::onRenderLevelStage);
+            // NeoForge.EVENT_BUS.addListener(this::onRenderLevelStage);
         });
     }
 
-    @SubscribeEvent
-    public void onRenderLevelStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
-            if (cameraPathRenderer != null) {
-                cameraPathRenderer.render(event);
-            }
-        }
-        
-        // Allows you to spectate camera entity in replay editor.
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-            if (client.hitResult != null && client.hitResult.getType() == HitResult.Type.ENTITY) {
-                Entity ent = ((EntityHitResult) client.hitResult).getEntity();
-                if (ent instanceof AnimatedCameraEntity) {
-                    client.crosshairPickEntity = ent;
-                }
-            }
-        }
-    }
+    // @SubscribeEvent
+    // public void onRenderLevelStage(RenderLevelStageEvent event) {
+    //     if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_ENTITIES) {
+    //         if (cameraPathRenderer != null) {
+    //             cameraPathRenderer.render(event);
+    //         }
+    //     }
+    //     
+    //     // Allows you to spectate camera entity in replay editor.
+    //     if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+    //         if (client.hitResult != null && client.hitResult.getType() == HitResult.Type.ENTITY) {
+    //             Entity ent = ((EntityHitResult) client.hitResult).getEntity();
+    //             if (ent instanceof AnimatedCameraEntity) {
+    //                 client.crosshairPickEntity = ent;
+    //             }
+    //         }
+    //     }
+    // }
 
     public CameraAnimationModule getCameraAnimationsModule() {
         return cameraAnimationsModule;
     }
     
-    public CameraPathRenderer getCameraPathRenderer() {
-        return cameraPathRenderer;
-    }
+    // public CameraPathRenderer getCameraPathRenderer() {
+    //     return cameraPathRenderer;
+    // }
 }

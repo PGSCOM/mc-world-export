@@ -35,7 +35,7 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
         }
     }
 
-    @Override
+    // @Override
     protected void defineSynchedData(net.minecraft.network.syncher.SynchedEntityData.Builder builder) {        
     }
 
@@ -47,12 +47,12 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
     protected void addAdditionalSaveData(CompoundTag var1) {        
     }
 
-    @Override
+    // @Override
     public Packet<ClientGamePacketListener> getAddEntityPacket() {
         throw new IllegalStateException("This entity is client-side only.");
     }
 
-    @Override
+    // @Override
     public ClientLevel level() {
         return (ClientLevel) super.level();
     }
@@ -74,7 +74,7 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
         this.fov = fov;
     }
 
-    @Override
+    // @Override
     protected float getEyeHeight(Pose pose, EntityDimensions dimensions) {
         return 0;
     }
@@ -150,27 +150,27 @@ public class AnimatedCameraEntity extends Entity implements RollProvider, FovPro
         setCameraPosition(loc.getX(), loc.getY(), loc.getZ());
     }
 
-    @Override
+    // @Override
     public boolean isOnFire() {
         return false;
     }
 
-    @Override
+    // @Override
     public boolean isPushable() {
         return false; // We are in full control of ourselves
     }
 
-    @Override
+    // @Override
     protected void spawnSprintParticles() {
         // We do not produce any particles, we are a camera
     }
 
-    @Override
+    // @Override
     public boolean shouldBeSaved() {
         return false;
     }
     
-    @Override
+    // @Override
     public boolean isPickable() {
         return true; // Allows player to spectate
     }

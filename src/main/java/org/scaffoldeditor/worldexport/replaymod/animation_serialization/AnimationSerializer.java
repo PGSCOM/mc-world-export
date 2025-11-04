@@ -44,9 +44,9 @@ import org.xml.sax.SAXException;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.Color;
+// Removed dependency on jgui Color in favor of plain ARGB ints
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 public class AnimationSerializer {
 
@@ -227,7 +227,7 @@ public class AnimationSerializer {
         List<String> lines = animData.getTextContent().lines().filter(s -> !s.isBlank()).toList();
         int length = lines.size();
 
-        Vec3d[] positions = new Vec3d[length];
+    Vec3[] positions = new Vec3[length];
         Rotation[] rotations = new Rotation[length];
         double[] fovs = new double[length];
 
@@ -289,18 +289,18 @@ public class AnimationSerializer {
         if (!colorHex.isEmpty()) {
             try {
                 int colorInt = RenderUtils.stripAlpha((int) Long.parseLong(colorHex, 16));
-                animation.setColor(RenderUtils.argbToColor(colorInt, new Color()));
+                animation.setColorARGB(colorInt);
             } catch (NumberFormatException e) {
                 LogManager.getLogger().error("Illegal color hex: "+colorHex, e);
-                animation.setColor(randomColor());
+                animation.setColorARGB(randomColor());
             }
         } else {
-            animation.setColor(randomColor());
+            animation.setColorARGB(randomColor());
         }
     }
 
-    private Color randomColor() {
-        return RenderUtils.hsvToColor(random.nextFloat(), .6f, 1f, new Color());
+    private int randomColor() {
+        return RenderUtils.hsvToARGB(random.nextFloat() * 360f, .6f, 1f);
     }
 
     /**
@@ -315,7 +315,7 @@ public class AnimationSerializer {
         element.setAttribute("id", String.valueOf(animation.getId()));
         element.setAttribute("name", animation.getName());
         element.setAttribute("offset", XMLUtils.writeVector(animation.getOffset()));
-        element.setAttribute("preview_color", Integer.toHexString(RenderUtils.colorToARGB(animation.getColor())));
+    element.setAttribute("preview_color", Integer.toHexString(animation.getColorARGB()));
 
         if (animation.isEmpty()) {
             element.appendChild(dom.createElement("anim_data"));

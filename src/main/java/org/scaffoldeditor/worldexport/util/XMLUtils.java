@@ -8,7 +8,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 public final class XMLUtils {
     private XMLUtils() {}
@@ -122,7 +122,7 @@ public final class XMLUtils {
      * @param vec The vector.
      * @return The stringified list.
      */
-    public static String writeVector(Vec3d vec) {
+    public static String writeVector(Vec3 vec) {
         return writeList(new String[] {
             String.valueOf(vec.x),
             String.valueOf(vec.y),
@@ -136,12 +136,12 @@ public final class XMLUtils {
      * @return The parsed vector.
      * @throws IllegalArgumentException If the stringified list is improperly formatted.
      */
-    public static Vec3d parseVector(String str) throws IllegalArgumentException {
+    public static Vec3 parseVector(String str) throws IllegalArgumentException {
         String[] list = readList(str);
         if (list.length != 3) {
             throw new IllegalArgumentException("List must contain 3 values.");
         }
-        return new Vec3d(
+        return new Vec3(
                 Double.parseDouble(list[0]),
                 Double.parseDouble(list[1]),
                 Double.parseDouble(list[2]));

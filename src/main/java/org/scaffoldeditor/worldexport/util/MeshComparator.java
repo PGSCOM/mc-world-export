@@ -9,7 +9,7 @@ import de.javagl.obj.FloatTuple;
 import de.javagl.obj.ReadableObj;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntComparators;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Contains a set of functions allowing the comparison of meshes.
@@ -70,7 +70,7 @@ public class MeshComparator {
      * @return Whether these models are equal.
      */
     public boolean meshEquals(ReadableObj mesh1, ReadableObj mesh2, float epsilon, int flags) {
-        return meshEquals(mesh1, mesh2, Vec3d.ZERO, epsilon, flags);
+        return meshEquals(mesh1, mesh2, 0.0, 0.0, 0.0, epsilon, flags);
     }
 
     /**
@@ -86,7 +86,11 @@ public class MeshComparator {
      * <p><code>NO_SORT: 8</code></p>
      * @return Whether these models are equal.
      */
-    public boolean meshEquals(ReadableObj mesh1, ReadableObj mesh2, Vec3d offset, float epsilon, int flags) {
+    public boolean meshEquals(ReadableObj mesh1, ReadableObj mesh2, Vec3 offset, float epsilon, int flags) {
+        return meshEquals(mesh1, mesh2, offset.x, offset.y, offset.z, epsilon, flags);
+    }
+
+    private boolean meshEquals(ReadableObj mesh1, ReadableObj mesh2, double ox, double oy, double oz, float epsilon, int flags) {
         if (mesh1.equals(mesh2)) return true;
 
         // Preliminary checks.
@@ -130,7 +134,7 @@ public class MeshComparator {
                 index2 = indices2[i];
             }
 
-            if (!floatTupleEquals(mesh1.getVertex(index1), mesh2.getVertex(index2), epsilon, offset)) return false;
+            if (!floatTupleEquals(mesh1.getVertex(index1), mesh2.getVertex(index2), epsilon, ox, oy, oz)) return false;
 
             if ((flags & COMPARE_UVS) == COMPARE_UVS) {
                 if (!mesh1.getTexCoord(index1).equals(mesh2.getTexCoord(index2))) return false;
@@ -140,10 +144,10 @@ public class MeshComparator {
         return true;
     }
 
-    private boolean floatTupleEquals(FloatTuple first, FloatTuple second, float epsilon, Vec3d offset) {
-        return Math.abs(first.getX() + offset.x - second.getX()) <= epsilon
-                && Math.abs(first.getY() + offset.y - second.getY()) <= epsilon
-                && Math.abs(first.getZ() + offset.z - second.getZ()) <= epsilon;
+    private boolean floatTupleEquals(FloatTuple first, FloatTuple second, float epsilon, double ox, double oy, double oz) {
+        return Math.abs(first.getX() + ox - second.getX()) <= epsilon
+                && Math.abs(first.getY() + oy - second.getY()) <= epsilon
+                && Math.abs(first.getZ() + oz - second.getZ()) <= epsilon;
     }
 
     private int[] getSortedIndices(ReadableObj mesh) {

@@ -7,7 +7,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import org.scaffoldeditor.worldexport.replay.ReplayEntity;
 
 public final class UtilFunctions {
     private UtilFunctions() {}
@@ -93,13 +92,6 @@ public final class UtilFunctions {
 
     }
 
-    /**
-     * Create a view of a set of entities that contains the names of said entities.
-     * @param ents The set of entities.
-     * @return The generated view.
-     */
-    public static Set<String> nameView(Set<ReplayEntity<?>> ents) {
-        return new SetView<>(ents, (ent) -> ent.getName());
-    }
+    // Note: nameView for ReplayEntity removed temporarily to decouple from excluded replay package
 
 }

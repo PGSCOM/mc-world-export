@@ -1,10 +1,5 @@
 package org.scaffoldeditor.worldexport.util;
 
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.ReadableColor;
-import com.replaymod.lib.de.johni0702.minecraft.gui.utils.lwjgl.WritableColor;
-
-import net.minecraft.util.math.ColorHelper;
-
 public final class RenderUtils {
     private RenderUtils() {};
 
@@ -21,85 +16,26 @@ public final class RenderUtils {
     }
 
     /**
-     * Convert a <code>ReadableColor</code> to an ARGB int.
-     * @param color The color.
-     * @return The ARGB int.
+     * Convert hue/saturation/value to an ARGB color. Hue is in degrees 0..360, saturation/value 0..1.
      */
-    public static int colorToARGB(ReadableColor color) {
-        return ColorHelper.Argb.getArgb(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
-    }
-
-    /**
-     * Convert an ARGB int to a color object.
-     * @param <T> The color type.
-     * @param argb The ARGB int.
-     * @param dest The color to write into.
-     * @return <code>dest</code>
-     */
-    public static <T extends WritableColor> T argbToColor(int argb, T dest) {
-        dest.set(argb >> 16 & 0xFF,
-                argb >> 8 & 0xFF,
-                argb & 0xFF,
-                argb >>> 24);
-        return dest;
-    }
-
-    /**
-     * Convert hue/saturation/color values into RGB color values and put them into a
-     * <code>WritableColor</code>. Values range from <code>0..1</code>
-     * 
-     * @param <T>        The color type.
-     * @param hue        Hue.
-     * @param saturation Saturation.
-     * @param value      Value.
-     * @param dest       The color object to write into.
-     * @return <code>dest</code>
-     */
-    public static <T extends WritableColor> T hsvToColor(float hue, float saturation, float value, T dest) {
+    public static int hsvToARGB(float hueDeg, float saturation, float value) {
         float chroma = value * saturation;
-        float huePrime = hue / 60.0f;
+        float huePrime = (hueDeg % 360f) / 60.0f;
         float intermediate = chroma * (1 - Math.abs(huePrime % 2 - 1));
 
-        float red1, green1, blue1;
-        if (huePrime >= 0 && huePrime < 1) {
-            red1 = chroma;
-            green1 = intermediate;
-            blue1 = 0;
-        } else if (huePrime >= 1 && huePrime < 2) {
-            red1 = intermediate;
-            green1 = chroma;
-            blue1 = 0;
-        } else if (huePrime >= 2 && huePrime < 3) {
-            red1 = 0;
-            green1 = chroma;
-            blue1 = intermediate;
-        } else if (huePrime >= 3 && huePrime < 4) {
-            red1 = 0;
-            green1 = intermediate;
-            blue1 = chroma;
-        } else if (huePrime >= 4 && huePrime < 5) {
-            red1 = intermediate;
-            green1 = 0;
-            blue1 = chroma;
-        } else if (huePrime >= 5 && huePrime < 6) {
-            red1 = chroma;
-            green1 = 0;
-            blue1 = intermediate;
-        } else {
-            red1 = 0;
-            green1 = 0;
-            blue1 = 0;
-        }
+        float r1, g1, b1;
+        if (huePrime >= 0 && huePrime < 1) { r1 = chroma; g1 = intermediate; b1 = 0; }
+        else if (huePrime < 2) { r1 = intermediate; g1 = chroma; b1 = 0; }
+        else if (huePrime < 3) { r1 = 0; g1 = chroma; b1 = intermediate; }
+        else if (huePrime < 4) { r1 = 0; g1 = intermediate; b1 = chroma; }
+        else if (huePrime < 5) { r1 = intermediate; g1 = 0; b1 = chroma; }
+        else { r1 = chroma; g1 = 0; b1 = intermediate; }
 
-        float valueMinusChroma = value - chroma;
-        float red = red1 + valueMinusChroma;
-        float green = green1 + valueMinusChroma;
-        float blue = blue1 + valueMinusChroma;
-        
-        dest.setRed((byte) (red * 255));
-        dest.setGreen((byte) (green * 255));
-        dest.setBlue((byte) (blue * 255));
-
-        return dest;
+        float m = value - chroma;
+        int r = Math.round((r1 + m) * 255);
+        int g = Math.round((g1 + m) * 255);
+        int b = Math.round((b1 + m) * 255);
+        int a = 0xFF;
+        return (a << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | (b & 0xFF);
     }
 }
